@@ -30,6 +30,10 @@ permissions:
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
+      package_directory: ${{ steps.package.outputs.directory }}
+      service: ${{ inputs.service }}
     steps:
       - name: Set package directory
         id: package
@@ -85,6 +89,14 @@ jobs:
         run: |
           cd ${{ steps.package.outputs.directory }}
           bump2version ${{ inputs.bump_type }}
+
+      - name: Extract version from pyproject.toml
+        id: extract-version
+        run: |
+          cd ${{ steps.package.outputs.directory }}
+          VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
 
       - name: Push changes
         run: |
