@@ -20,9 +20,7 @@ This guide lists **breaking changes** when migrating from the original `Computer
 ## Usage Examples: Old vs New
 
 ### 1. Anthropic Loop
-
 **Old:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -33,9 +31,7 @@ async with Computer() as computer:
     async for result in agent.run("Take a screenshot"):
         print(result)
 ```
-
 **New:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -50,9 +46,7 @@ async with Computer() as computer:
 ```
 
 ### 2. OpenAI Loop
-
 **Old:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -63,9 +57,7 @@ async with Computer() as computer:
     async for result in agent.run("Take a screenshot"):
         print(result)
 ```
-
 **New:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -80,9 +72,7 @@ async with Computer() as computer:
 ```
 
 ### 3. UI-TARS Loop
-
 **Old:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -93,9 +83,7 @@ async with Computer() as computer:
     async for result in agent.run("Take a screenshot"):
         print(result)
 ```
-
 **New:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -110,9 +98,7 @@ async with Computer() as computer:
 ```
 
 ### 4. Omni Loop
-
 **Old:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(
@@ -123,9 +109,7 @@ async with Computer() as computer:
     async for result in agent.run("Take a screenshot"):
         print(result)
 ```
-
 **New:**
-
 ```python
 async with Computer() as computer:
     agent = ComputerAgent(

@@ -16,7 +16,6 @@ The Computer Server exposes a single REST endpoint for command execution:
 - Returns results as a streaming response (text/event-stream)
 
 ### Request Format
-
 ```json
 {
   "command": "<command_name>",
@@ -25,12 +24,10 @@ The Computer Server exposes a single REST endpoint for command execution:
 ```
 
 ### Required Headers (for cloud containers)
-
 - `X-Container-Name`: Name of the container (cloud only)
 - `X-API-Key`: API key for authentication (cloud only)
 
 ### Example Request (Python)
-
 ```python
 import requests
 
@@ -41,7 +38,6 @@ print(resp.text)
 ```
 
 ### Example Request (Cloud)
-
 ```python
 import requests
 
@@ -56,9 +52,7 @@ print(resp.text)
 ```
 
 ### Response Format
-
 Streaming text/event-stream with JSON objects, e.g.:
-
 ```
 data: {"success": true, "content": "..."}
 
@@ -66,5 +60,4 @@ data: {"success": false, "error": "..."}
 ```
 
 ### Supported Commands
-
 See [Commands Reference](./Commands) for the full list of commands and parameters.

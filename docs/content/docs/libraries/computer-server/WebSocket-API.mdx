@@ -11,9 +11,7 @@ The Computer Server exposes a WebSocket endpoint for real-time command execution
 - `wss://your-container.containers.cloud.trycua.com:8443/ws` (cloud)
 
 ### Authentication (Cloud Only)
-
 For cloud containers, you must authenticate immediately after connecting:
-
 ```json
 {
   "command": "authenticate",
@@ -23,13 +21,10 @@ For cloud containers, you must authenticate immediately after connecting:
   }
 }
 ```
-
 If authentication fails, the connection is closed.
 
 ### Command Format
-
 Send JSON messages:
-
 ```json
 {
   "command": "<command_name>",
@@ -38,7 +33,6 @@ Send JSON messages:
 ```
 
 ### Example (Python)
-
 ```python
 import websockets
 import asyncio
@@ -55,7 +49,6 @@ asyncio.run(main())
 ```
 
 ### Example (Cloud)
-
 ```python
 import websockets
 import asyncio
@@ -81,9 +74,7 @@ asyncio.run(main())
 ```
 
 ### Response Format
-
 Each response is a JSON object:
-
 ```json
 {
   "success": true,
@@ -92,5 +83,4 @@ Each response is a JSON object:
 ```
 
 ### Supported Commands
-
 See [Commands Reference](./Commands) for the full list of commands and parameters.
