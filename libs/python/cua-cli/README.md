@@ -93,12 +93,12 @@ Individual permissions: `sandbox:list`, `sandbox:create`, `sandbox:delete`, `san
 
 ## Environment Variables
 
-- Authentication uses OIDC device authorization at `https://run.cua.ai`. Tokens are stored in the operating system credential vault; the CLI does not read API keys from environment variables or write them to `.env` files.
+- Authentication uses OIDC device authorization discovered from `https://auth.cua.ai/realms/cyclops-cs`, while authenticated cloud requests use `https://run.cua.ai`. Tokens are stored in the operating system credential vault; the CLI does not read API keys from environment variables or write them to `.env` files.
 - `CUA_MCP_PERMISSIONS`: Default MCP permissions (comma-separated)
 - `CUA_SANDBOX`: Default sandbox name for computer commands
 
 ## Cloud Authentication
 
-`cua auth login` uses the standard OAuth device authorization flow. The CLI prints a verification URL and code, so it also works over SSH or in CI-style terminals; use `--no-browser` to prevent an automatic browser attempt. Complete the verification in any browser, then return to the terminal while the CLI polls for approval.
+`cua auth login` uses the standard OAuth device authorization flow. It discovers Keycloak endpoints from `https://auth.cua.ai/realms/cyclops-cs`, while the short verification UI is served from `https://run.cua.ai/device`. The CLI prints a verification URL and code, so it also works over SSH or in CI-style terminals; use `--no-browser` to prevent an automatic browser attempt. Complete the verification in any browser, then return to the terminal while the CLI polls for approval.
 
 Access tokens refresh automatically before authenticated `run.cua.ai` requests. `cua auth logout` asks the issuer to revoke the refresh token and always removes the local credential-vault entry, even when the network is unavailable. The CLI never prints access or refresh tokens.

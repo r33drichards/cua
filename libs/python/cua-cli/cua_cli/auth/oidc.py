@@ -12,6 +12,7 @@ import aiohttp
 from cua_cli.auth.store import OAuthCredentials, load_credentials, save_credentials
 
 DEFAULT_RUN_API_BASE = "https://run.cua.ai"
+DEFAULT_OIDC_ISSUER = "https://auth.cua.ai/realms/cyclops-cs"
 DEFAULT_CLIENT_ID = "cua-cli"
 DEFAULT_SCOPE = "openid profile offline_access"
 DEVICE_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
@@ -44,7 +45,7 @@ class OidcDiscovery:
                 ),
             )
         except (KeyError, TypeError) as error:
-            raise OidcError("run.cua.ai returned an incomplete OIDC discovery document.") from error
+            raise OidcError("OIDC issuer returned an incomplete discovery document.") from error
 
 
 @dataclass(frozen=True)
@@ -75,7 +76,7 @@ class DeviceCode:
             )
         except (KeyError, TypeError, ValueError) as error:
             raise OidcError(
-                "run.cua.ai returned an invalid device authorization response."
+                "OIDC issuer returned an invalid device authorization response."
             ) from error
 
 
@@ -102,13 +103,13 @@ class OidcClient:
 
     def __init__(
         self,
-        run_api_base: str = DEFAULT_RUN_API_BASE,
+        oidc_issuer: str = DEFAULT_OIDC_ISSUER,
         client_id: str = DEFAULT_CLIENT_ID,
         scope: str = DEFAULT_SCOPE,
         request: HttpRequest = _aiohttp_form_request,
         sleep: Sleep = asyncio.sleep,
     ) -> None:
-        self.run_api_base = run_api_base.rstrip("/")
+        self.oidc_issuer = oidc_issuer.rstrip("/")
         self.client_id = client_id
         self.scope = scope
         self._request = request
@@ -116,7 +117,7 @@ class OidcClient:
 
     async def discover(self) -> OidcDiscovery:
         status, payload = await self._request(
-            "GET", f"{self.run_api_base}/.well-known/openid-configuration", None
+            "GET", f"{self.oidc_issuer}/.well-known/openid-configuration", None
         )
         if status != 200:
             raise OidcError(f"OIDC discovery failed (HTTP {status}).")
@@ -211,7 +212,7 @@ def _credentials_from_token_response(payload: Mapping[str, Any]) -> OAuthCredent
         expires_in = int(payload["expires_in"])
         access_token = str(payload["access_token"])
     except (KeyError, TypeError, ValueError) as error:
-        raise OidcError("run.cua.ai returned an invalid token response.") from error
+        raise OidcError("OIDC issuer returned an invalid token response.") from error
     return OAuthCredentials(
         access_token=access_token,
         refresh_token=str(payload["refresh_token"]) if payload.get("refresh_token") else None,

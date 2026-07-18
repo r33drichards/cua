@@ -1,4 +1,4 @@
-"""Tests for the run.cua.ai OIDC device flow."""
+"""Tests for the Keycloak OIDC device flow used by run.cua.ai."""
 
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -27,9 +27,9 @@ async def test_device_flow_discovers_requests_and_polls() -> None:
             (
                 200,
                 {
-                    "token_endpoint": "https://run.cua.ai/oauth/token",
-                    "device_authorization_endpoint": "https://run.cua.ai/oauth/device/code",
-                    "revocation_endpoint": "https://run.cua.ai/oauth/revoke",
+                    "token_endpoint": "https://auth.cua.ai/realms/cyclops-cs/protocol/openid-connect/token",
+                    "device_authorization_endpoint": "https://auth.cua.ai/realms/cyclops-cs/protocol/openid-connect/device/code",
+                    "revocation_endpoint": "https://auth.cua.ai/realms/cyclops-cs/protocol/openid-connect/revoke",
                 },
             ),
             (
@@ -70,7 +70,7 @@ async def test_device_flow_discovers_requests_and_polls() -> None:
     assert delays == [2]
     assert requester.calls[0] == (
         "GET",
-        "https://run.cua.ai/.well-known/openid-configuration",
+        "https://auth.cua.ai/realms/cyclops-cs/.well-known/openid-configuration",
         None,
     )
     assert requester.calls[1][2] == {
@@ -102,7 +102,11 @@ async def test_refresh_preserves_existing_refresh_token_when_not_rotated() -> No
         refresh_token="existing-refresh-token",
         expires_at=datetime.now(UTC),
     )
-    discovery = type("Discovery", (), {"token_endpoint": "https://run.cua.ai/oauth/token"})()
+    discovery = type(
+        "Discovery",
+        (),
+        {"token_endpoint": "https://auth.cua.ai/realms/cyclops-cs/protocol/openid-connect/token"},
+    )()
 
     refreshed = await OidcClient(request=requester).refresh(discovery, credentials)
 
@@ -128,7 +132,11 @@ async def test_poll_slow_down_increases_interval() -> None:
     async def sleep(delay: float) -> None:
         delays.append(delay)
 
-    discovery = type("Discovery", (), {"token_endpoint": "https://run.cua.ai/oauth/token"})()
+    discovery = type(
+        "Discovery",
+        (),
+        {"token_endpoint": "https://auth.cua.ai/realms/cyclops-cs/protocol/openid-connect/token"},
+    )()
     device_code = type("Device", (), {"device_code": "device", "expires_in": 600, "interval": 3})()
 
     await OidcClient(request=requester, sleep=sleep).poll_for_tokens(discovery, device_code)
