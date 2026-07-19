@@ -14,8 +14,14 @@
 
 use std::io::{BufRead, BufReader, Write};
 use std::process::{Command, Stdio};
+use std::sync::Mutex;
 
 use cua_driver_testkit::driver_binary;
+
+// Each test below exercises a fresh process, but the driver processes share
+// daemon/startup state. Keep those process-level probes sequential so a
+// parallel test runner cannot make every child exit before initialization.
+static DRIVER_PROCESS_LOCK: Mutex<()> = Mutex::new(());
 
 fn send_request(stdin: &mut impl Write, request: &serde_json::Value) {
     let line = serde_json::to_string(request).unwrap();
@@ -32,6 +38,9 @@ fn read_response(reader: &mut impl BufRead) -> serde_json::Value {
 /// `tools/list` response. Skips the test silently if the binary hasn't
 /// been built (CI builds it separately).
 fn fetch_tools_list() -> Option<serde_json::Value> {
+    let _guard = DRIVER_PROCESS_LOCK
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
     let binary = driver_binary();
     if !binary.exists() {
         eprintln!("Binary not found at {:?} — run `cargo build` first", binary);
